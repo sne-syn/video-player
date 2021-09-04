@@ -18,6 +18,13 @@ body {
   font-family: Helvetica, sans-serif;
 }
 
+ul,
+li {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
 .fas {
   color: var(--font-color);
   font-size: 35px;
