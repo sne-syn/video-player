@@ -7,6 +7,7 @@ const volumeRange = document.querySelector('.volume-range');
 const volumeBar = document.querySelector('.volume-bar');
 const currentTime = document.querySelector('.time-elapsed');
 const duration = document.querySelector('.time-duration');
+const speed = document.querySelector('.player-speed');
 const fullscreenBtn = document.querySelector('.fullscreen');
 
 // Play & Pause ----------------------------------- //
@@ -48,19 +49,9 @@ const setProgress = (evt) => {
 }
 // Volume Controls --------------------------- //
 
-const changeVolume = (evt) => {
-  let volume = evt.offsetX / volumeRange.offsetWidth;
-  if (volume < 0.1) {
-    volume = 0;
-  }
+let lastVolume = 1;
 
-  if (volume > 0.9) {
-    volume = 1;
-  }
-  volumeBar.style.width = `${volume * 100}%`;
-  video.volume = volume;
-  volumeIcon.className = '';
-
+const updateVolumeIcon = (volume) => {
   switch (true) {
     case volume > 0.7:
       console.log(volume)
@@ -76,12 +67,45 @@ const changeVolume = (evt) => {
       break;
     default:
       volumeIcon.className = '';
-  }
+  };  
 }
 
+const changeVolume = (evt) => {
+  let volume = evt.offsetX / volumeRange.offsetWidth;
+  if (volume < 0.1) {
+    volume = 0;
+  }
+
+  if (volume > 0.9) {
+    volume = 1;
+  }
+  volumeBar.style.width = `${volume * 100}%`;
+  video.volume = volume;
+  volumeIcon.className = '';
+  updateVolumeIcon(volume);
+  lastVolume = volume;
+};
+
+const toggleMute = () => {
+  volumeIcon.className = '';
+  if (video.volume) {
+    lastVolume = video.volume;
+    video.volume = 0;
+    volumeBar.style.width = 0;
+    volumeIcon.classList.add('fas', 'fa-volume-mute');
+    volumeIcon.setAttribute('title', 'Unmute');
+  } else {
+    video.volume = lastVolume;
+    volumeBar.style.width = `${lastVolume * 100}%`;
+    updateVolumeIcon(lastVolume);
+    volumeIcon.setAttribute('title', 'Mute');
+  }
+};
+
 // Change Playback Speed -------------------- //
-
-
+const changeSpeed = () => {
+  video.playbackRate = speed.value;
+};
 
 // Fullscreen ------------------------------- //
 
@@ -94,3 +118,5 @@ video.addEventListener('timeupdate', updateProgress);
 video.addEventListener('canplay', updateProgress);
 progressRange.addEventListener('click', setProgress);
 volumeRange.addEventListener('click', changeVolume);
+volumeIcon.addEventListener('click', toggleMute);
+speed.addEventListener('change', changeSpeed);
